@@ -35,7 +35,8 @@ public class PersonsController {
 
     @GetMapping("/persons/{id}")
     @PreAuthorize("hasAuthority('VIEW_PERSON')")
-    public String person(@PathVariable int id, Model model) {
+    public String person(@PathVariable int id, Model model,HttpSession httpSession) {
+        model.addAttribute("CSRF_TOKEN",httpSession.getAttribute("CSRF_TOKEN"));
         model.addAttribute("person", personRepository.get("" + id));
         return "person";
     }
