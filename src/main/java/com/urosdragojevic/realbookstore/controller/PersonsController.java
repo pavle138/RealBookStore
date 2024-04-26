@@ -5,9 +5,11 @@ import com.urosdragojevic.realbookstore.domain.Person;
 import com.urosdragojevic.realbookstore.domain.User;
 import com.urosdragojevic.realbookstore.repository.PersonRepository;
 import com.urosdragojevic.realbookstore.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -55,8 +57,12 @@ public class PersonsController {
     }
 
     @PostMapping("/update-person")
-    //@PreAuthorize("hasAuthority('UPDATE_PERSON')")
-    public String updatePerson(Person person) {
+    @PreAuthorize("hasAuthority('UPDATE_PERSON')")
+    public String updatePerson(Person person, HttpSession httpSession,@RequestParam("csrfToken") String csrfToken) throws AccessDeniedException {
+        String csrf = httpSession.getAttribute("CSRF_TOKEN").toString();
+        if (!csrf.equals(csrfToken)) {
+            throw new AccessDeniedException("Forbidden");
+        }
         personRepository.update(person);
         return "redirect:/persons/" + person.getId();
     }
