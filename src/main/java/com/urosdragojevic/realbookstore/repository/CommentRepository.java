@@ -3,6 +3,7 @@ package com.urosdragojevic.realbookstore.repository;
 import com.urosdragojevic.realbookstore.domain.Comment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -33,7 +34,7 @@ public class CommentRepository {
             statement.setString(3,comment.getComment());
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -47,7 +48,7 @@ public class CommentRepository {
                 commentList.add(new Comment(rs.getInt(1), rs.getInt(2), rs.getString(3)));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
         }
         return commentList;
     }

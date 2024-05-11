@@ -64,7 +64,10 @@ public class PersonsController {
         if (!csrf.equals(csrfToken)) {
             throw new AccessDeniedException("Forbidden");
         }
+        auditLogger.audit("HttpSession with id: "+httpSession.getId()+", initiated update of person with id: "
+                    +person.getId()+", at: "+java.time.LocalDateTime.now().toString());
         personRepository.update(person);
+        LOG.info("Person : {} has been updated",person);
         return "redirect:/persons/" + person.getId();
     }
 

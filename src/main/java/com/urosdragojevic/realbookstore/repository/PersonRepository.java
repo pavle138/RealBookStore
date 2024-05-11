@@ -33,7 +33,7 @@ public class PersonRepository {
                 personList.add(createPersonFromResultSet(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
         }
         return personList;
     }
@@ -61,7 +61,7 @@ public class PersonRepository {
                 return createPersonFromResultSet(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
         }
 
         return null;
@@ -72,9 +72,10 @@ public class PersonRepository {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
         ) {
+            auditLogger.audit("Delete of Person with id: "+ personId);
             statement.executeUpdate(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -97,9 +98,11 @@ public class PersonRepository {
             String email = personUpdate.getEmail() != null ? personUpdate.getEmail() : personFromDb.getEmail();
             statement.setString(1, firstName);
             statement.setString(2, email);
+            auditLogger.audit("Initiating update of Person with id: "+personUpdate.getId()+ ". New params, first_name: "+firstName+" , last_name: "+ personUpdate.getLastName()+" ,email: "+email);
             statement.executeUpdate();
+            LOG.info("Update of Person with id: "+ personUpdate.getId()+ " was successful.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
         }
     }
 }

@@ -36,7 +36,7 @@ public class BookRepository {
                 bookList.add(book);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
         }
         return bookList;
     }
@@ -67,7 +67,7 @@ public class BookRepository {
                 return createBookFromResultSet(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn(e.getMessage(),e);
         }
         return null;
     }
@@ -92,14 +92,16 @@ public class BookRepository {
                     ) {
                         statement2.setInt(1, (int) finalId);
                         statement2.setInt(2, genre.getId());
+                        auditLogger.audit("Initialized new book creation with id: "+finalId+". New params, title: "+book.getTitle()+", author: "+book.getAuthor()+", description: "+book.getDescription());
                         statement2.executeUpdate();
+                        LOG.info("Book with id: "+finalId+"was successfully created.");
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        LOG.error(e.getMessage(),e);
                     }
                 });
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
         }
         return id;
     }
@@ -113,11 +115,15 @@ public class BookRepository {
              Statement statement = connection.createStatement();
         ) {
             statement.executeUpdate(query);
+            LOG.info("Book with id: "+bookId+"was successfully deleted from books table.");
             statement.executeUpdate(query2);
+            LOG.info("Book with id: "+bookId+"was successfully deleted from ratings table.");
             statement.executeUpdate(query3);
+            LOG.info("Book with id: "+bookId+"was successfully deleted from comments table.");
             statement.executeUpdate(query4);
+            LOG.info("Book with id: "+bookId+"was successfully deleted from books_to_genres table.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
         }
     }
 
